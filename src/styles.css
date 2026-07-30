@@ -1,0 +1,262 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+   Оформление: тёплый терапевтичный стиль.
+   Все цвета, шрифты и скругления собраны здесь — меняются в одном месте.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+    --page: #F5F1EA;
+    --page-2: #EDE6D9;
+    --surface: #FFFDF9;
+    --surface-2: #F3EEE4;
+    --line: #E0D7C6;
+    --ink: #2B2A26;
+    --ink-soft: #6E6759;
+    --accent: #4B6B4F;
+    --accent-ink: #FFFFFF;
+    --accent-soft: rgba(75, 107, 79, 0.10);
+    --heat: #E07A3F;
+    --figure: #B9AF9C;
+    --radius: 22px;
+    --shadow: 0 1px 2px rgba(60, 50, 30, .04), 0 8px 24px rgba(60, 50, 30, .05);
+    --font-display: 'Lora', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+* { -webkit-font-smoothing: antialiased; }
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--page);
+    color: var(--ink);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page { background: var(--page); }
+.page-2 { background: var(--page-2); }
+
+/* Заголовки */
+.display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.18;
+}
+
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.eyebrow-soft { color: var(--ink-soft); }
+
+.muted { color: var(--ink-soft); }
+.accent-text { color: var(--accent); }
+
+/* Карточки */
+.surface {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.surface-flat {
+    background: var(--surface-2);
+    border-radius: calc(var(--radius) - 6px);
+}
+
+.blur-bar {
+    background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Поля ввода */
+.field-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 18px;
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink);
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.field-input::placeholder { color: var(--ink-soft); opacity: .65; }
+
+.field-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* Кнопки */
+.btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 17px 20px;
+    border-radius: 18px;
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition: transform .15s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
+}
+
+.btn:active { transform: scale(0.985); }
+.btn:disabled { opacity: .4; }
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: 0 6px 18px var(--accent-soft);
+}
+
+.btn-ghost {
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+}
+
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Варианты ответа */
+.option-row {
+    width: 100%;
+    text-align: left;
+    padding: 17px 20px;
+    font-size: 16.5px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background .2s ease, color .2s ease;
+}
+
+.option-row + .option-row { border-top: 1px solid var(--line); }
+.option-row:hover { background: var(--surface-2); }
+.option-row.is-on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+.chip {
+    padding: 11px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    transition: all .18s ease;
+}
+
+.chip:hover { border-color: var(--accent); }
+.chip.is-on {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+}
+
+/* Шкала прогресса */
+.progress-track { height: 3px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); transition: width .5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Номер шага крупной цифрой */
+.step-number {
+    font-family: var(--font-display);
+    font-size: 54px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--accent);
+    opacity: .18;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.rule { height: 1px; background: var(--line); }
+
+.fade-in { animation: fadeIn .45s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Текст разбора */
+.report h3 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    margin-top: 38px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+}
+.report h3:first-child { margin-top: 0; }
+.report p { font-size: 16.5px; line-height: 1.68; color: var(--ink-soft); margin-bottom: 15px; }
+.report em { font-style: italic; color: var(--ink); }
+.report strong { color: var(--ink); font-weight: 600; }
+.report ul { list-style: none; padding-left: 0; margin-bottom: 20px; }
+.report li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+    padding-left: 22px;
+    position: relative;
+}
+.report li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 10px;
+    width: 8px;
+    height: 1px;
+    background: var(--accent);
+}
+.report blockquote {
+    margin: 0 0 20px;
+    padding: 20px 22px;
+    background: var(--accent-soft);
+    border-radius: 18px;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--ink);
+}
+.report blockquote ul { margin-bottom: 0; }
+.report blockquote li { color: var(--ink); }
+.report .highlight-box {
+    margin-top: 28px;
+    padding: 22px;
+    background: var(--surface-2);
+    border-radius: 18px;
+}
+.report .highlight-box p { color: var(--ink); margin-bottom: 0; }
+
+/* Телесная карта */
+.heat-zone { opacity: 0; transition: opacity .9s ease; }
