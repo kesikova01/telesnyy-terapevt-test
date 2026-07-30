@@ -628,43 +628,101 @@ export default function App() {
         );
     };
 
-    const renderStep = () => {
-        if (step === 0) return renderLanguage();
-
-        const progress = step > 1 && step < 11 ? ((step - 1) / TOTAL_STEPS) * 100 : 100;
+    // Экран результата — отдельная страница: на большом экране в две колонки
+    const renderResult = () => {
+        if (isLoading) {
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center gap-7 px-8 fade-in">
+                    <div className="w-9 h-9 rounded-full animate-spin"
+                         style={{ border: '2px solid var(--line)', borderTopColor: 'var(--accent)' }}></div>
+                    <p className="text-[15px] muted text-center max-w-[320px]">{t.analyzingText}</p>
+                </div>
+            );
+        }
+        if (!reportHtml) return null;
 
         return (
-            <div className="flex flex-col h-screen max-w-2xl mx-auto relative fade-in">
-                <div className="pt-12 pb-4 px-7 blur-bar sticky top-0 z-10">
-                    <div className="flex items-center justify-between h-6">
-                        {step > 1 && step < 11 ? (
-                            <button onClick={prevStep} className="flex items-center text-[15px] muted hover:opacity-70 active:opacity-50 transition-opacity">
-                                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                                    <path d="M6 1 L1 6 L6 11" />
-                                </svg>
-                                {t.backBtn}
-                            </button>
-                        ) : <div />}
-                        <span className="eyebrow">
-                            {step > 1 && step < 11 ? t.stepLabel(step - 1) : ''}
-                        </span>
+            <div className="min-h-screen flex flex-col fade-in">
+                <header className="sticky top-0 z-20 blur-bar" style={{ borderBottom: '1px solid var(--line)' }}>
+                    <div className="mx-auto w-full max-w-[680px] xl:max-w-[1120px] px-6 md:px-10 pt-8 md:pt-6 pb-4 text-center">
+                        <p className="eyebrow">{t.resultTitle}</p>
+                        <p className="text-[15px] font-semibold mt-1">{formData.name}</p>
                     </div>
-                    {step > 1 && step < 11 && (
-                        <div className="progress-track mt-4">
-                            <div className="progress-fill" style={{ width: `${progress}%` }} />
-                        </div>
-                    )}
-                </div>
+                </header>
 
-                <div className="flex-1 overflow-y-auto px-7 pt-6 pb-40">
+                <main className="flex-1 w-full max-w-[680px] xl:max-w-[1120px] mx-auto px-6 md:px-10 py-6 md:py-10">
+                    <div className="grid gap-5 xl:grid-cols-2 xl:items-start">
+                        <div className="space-y-5">
+                            <Summary bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone}
+                                     duration={isOwnOption(formData.time) ? formData.customTime : formData.time}
+                                     emotions={[...formData.emotions, formData.customEmotion]} />
+                            <div className="surface p-6 md:p-8 report" dangerouslySetInnerHTML={{ __html: reportHtml }}></div>
+                        </div>
+                        <div className="space-y-5">
+                            <BodyMap bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone} />
+                            <Chain steps={chain} lang={lang || 'ru'} />
+                            <Support items={support} lang={lang || 'ru'} />
+                            <Conclusion bodyKey={bodyKey} lang={lang || 'ru'} />
+                            <NextStep lang={lang || 'ru'} />
+                        </div>
+                    </div>
+                </main>
+
+                <footer className="sticky bottom-0 z-20 blur-bar" style={{ borderTop: '1px solid var(--line)' }}>
+                    <div className="mx-auto w-full max-w-[680px] xl:max-w-[900px] px-6 md:px-10 py-4 md:py-5
+                                    flex flex-col md:flex-row gap-3">
+                        <button onClick={() => trackButtonClick('Консультация', LINK_CONSULTATION)}
+                                disabled={!LINK_CONSULTATION} className="btn btn-primary md:flex-1">
+                            {t.consultBtn}
+                        </button>
+                        <button onClick={() => trackButtonClick('Бесплатные уроки', LINK_LESSONS)}
+                                disabled={!LINK_LESSONS} className="btn btn-ghost md:flex-1">
+                            {t.lessonsBtn}
+                        </button>
+                    </div>
+                </footer>
+            </div>
+        );
+    };
+
+    const renderStep = () => {
+        if (step === 0) return renderLanguage();
+        if (step === 11) return renderResult();
+
+        const progress = ((step - 1) / TOTAL_STEPS) * 100;
+
+        return (
+            <div className="min-h-screen flex flex-col fade-in">
+                <header className="sticky top-0 z-20 blur-bar">
+                    <div className="mx-auto w-full max-w-[680px] px-6 md:px-10 pt-8 md:pt-6 pb-4">
+                        <div className="flex items-center justify-between h-6">
+                            {step > 1 ? (
+                                <button onClick={prevStep} className="flex items-center text-[15px] muted hover:opacity-70 active:opacity-50 transition-opacity">
+                                    <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                                        <path d="M6 1 L1 6 L6 11" />
+                                    </svg>
+                                    {t.backBtn}
+                                </button>
+                            ) : <div />}
+                            <span className="eyebrow">{step > 1 ? t.stepLabel(step - 1) : ''}</span>
+                        </div>
+                        {step > 1 && (
+                            <div className="progress-track mt-4">
+                                <div className="progress-fill" style={{ width: `${progress}%` }} />
+                            </div>
+                        )}
+                    </div>
+                </header>
+
+                <main className="flex-1 w-full max-w-[680px] mx-auto px-6 md:px-10 py-8 md:py-12">
                     {step === 1 && (
-                        <div className="fade-in pt-2 pb-24">
+                        <div className="fade-in">
                             <p className="eyebrow mb-4">{t.welcomeTitle}</p>
-                            <h2 className="display text-[29px] mb-5">{t.welcomeDesc}</h2>
-                            <p className="muted text-[16.5px] leading-relaxed mb-6">{t.welcomeDetails}</p>
-                            <div className="surface-flat p-5 space-y-3">
+                            <h2 className="display text-[29px] md:text-[36px] mb-5">{t.welcomeDesc}</h2>
+                            <p className="muted text-[16.5px] md:text-[18px] leading-relaxed mb-7">{t.welcomeDetails}</p>
+                            <div className="surface-flat p-5 md:p-7 grid gap-3 sm:grid-cols-2">
                                 {[t.healthTitle, t.relTitle, t.moneyTitle, t.selfTitle].map(item => (
-                                    <div key={item} className="flex items-center text-[15px]">
+                                    <div key={item} className="flex items-center text-[15px] md:text-[16px]">
                                         <span className="w-1.5 h-1.5 rounded-full mr-3 shrink-0" style={{ background: 'var(--accent)' }} />
                                         {item}
                                     </div>
@@ -676,8 +734,8 @@ export default function App() {
                     {step === 2 && (
                         <div className="fade-in">
                             {stepMark(1)}
-                            <h2 className="display text-[27px] mb-5">{t.contactsTitle}</h2>
-                            <div className="space-y-4">
+                            <h2 className="display text-[27px] md:text-[33px] mb-6">{t.contactsTitle}</h2>
+                            <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0">
                                 <div>
                                     <label className="block eyebrow eyebrow-soft mb-2">{t.nameLabel}</label>
                                     <input type="text" className="field-input" value={formData.name} onChange={e => handleInputChange('name', e.target.value)} placeholder="Имя / Есіміңіз" />
@@ -695,8 +753,8 @@ export default function App() {
                     {step === 7 && (
                         <div className="fade-in">
                             {stepMark(6)}
-                            <h2 className="display text-[27px] mb-3">{t.timeTitle}</h2>
-                            <p className="muted text-[16px] leading-relaxed mb-5">{t.timeDesc}</p>
+                            <h2 className="display text-[27px] md:text-[33px] mb-3">{t.timeTitle}</h2>
+                            <p className="muted text-[16px] md:text-[17px] leading-relaxed mb-5">{t.timeDesc}</p>
                             <div className="surface overflow-hidden flex flex-col">
                                 {t.timeOptions.map(opt => (
                                     <button key={opt} onClick={() => handleInputChange('time', opt)}
@@ -721,8 +779,8 @@ export default function App() {
                     {step === 9 && (
                         <div className="fade-in">
                             {stepMark(8)}
-                            <h2 className="display text-[27px] mb-3">{t.emotionsTitle}</h2>
-                            <p className="muted text-[16px] leading-relaxed mb-5">{t.emotionsDesc}</p>
+                            <h2 className="display text-[27px] md:text-[33px] mb-3">{t.emotionsTitle}</h2>
+                            <p className="muted text-[16px] md:text-[17px] leading-relaxed mb-5">{t.emotionsDesc}</p>
                             <div className="flex flex-wrap gap-2.5 mb-5">
                                 {t.emotionOptions.map(emo => (
                                     <button key={emo} onClick={() => toggleEmotion(emo)}
@@ -741,16 +799,16 @@ export default function App() {
                         return (
                             <div className="fade-in">
                                 {stepMark(9)}
-                                <h2 className="display text-[27px] mb-3">{ui.clarifyTitle}</h2>
-                                <p className="muted text-[16px] leading-relaxed mb-5">{ui.clarifyDesc}</p>
+                                <h2 className="display text-[27px] md:text-[33px] mb-3">{ui.clarifyTitle}</h2>
+                                <p className="muted text-[16px] md:text-[17px] leading-relaxed mb-5">{ui.clarifyDesc}</p>
                                 <div className="space-y-3">
                                     {statements().map((text, i) => (
-                                        <div key={i} className="surface p-5">
-                                            <p className="text-[16px] leading-snug mb-4">{text}</p>
-                                            <div className="flex gap-2">
+                                        <div key={i} className="surface p-5 md:p-6 md:flex md:items-center md:gap-6">
+                                            <p className="text-[16px] md:text-[17px] leading-snug mb-4 md:mb-0 md:flex-1">{text}</p>
+                                            <div className="flex gap-2 md:shrink-0">
                                                 {options.map(opt => (
                                                     <button key={opt} onClick={() => setClarify(i, opt)}
-                                                            className={`chip flex-1 ${formData.clarify[i] === opt ? 'is-on' : ''}`}>
+                                                            className={`chip flex-1 md:flex-none md:min-w-[86px] ${formData.clarify[i] === opt ? 'is-on' : ''}`}>
                                                         {opt}
                                                     </button>
                                                 ))}
@@ -761,10 +819,10 @@ export default function App() {
                             </div>
                         );
                     })()}
-                </div>
+                </main>
 
-                {step > 0 && step < 11 && (
-                    <div className="px-7 pt-4 pb-8 blur-bar absolute bottom-0 left-0 right-0 z-20">
+                <footer className="sticky bottom-0 z-20 blur-bar" style={{ borderTop: '1px solid var(--line)' }}>
+                    <div className="mx-auto w-full max-w-[680px] px-6 md:px-10 py-4 md:py-5">
                         {error && (
                             <div className="mb-3 flex items-start text-[#C0392B] text-[14px] leading-snug fade-in">
                                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="mt-[3px] mr-2 shrink-0">
@@ -775,53 +833,11 @@ export default function App() {
                                 <span>{error}</span>
                             </div>
                         )}
-                        <button onClick={handleNext} className="btn btn-primary">
+                        <button onClick={handleNext} className="btn btn-primary md:max-w-[320px] md:mx-auto">
                             {step === 10 ? t.analyzeBtn : (step === 1 ? t.startBtn : t.nextBtn)}
                         </button>
                     </div>
-                )}
-
-                {step === 11 && isLoading && (
-                    <div className="absolute inset-0 page z-50 flex flex-col items-center justify-center space-y-7 fade-in">
-                        <div className="w-9 h-9 rounded-full animate-spin"
-                             style={{ border: '2px solid var(--line)', borderTopColor: 'var(--accent)' }}></div>
-                        <p className="text-[15px] muted text-center px-10">{t.analyzingText}</p>
-                    </div>
-                )}
-
-                {step === 11 && !isLoading && reportHtml && (
-                    <div className="absolute inset-0 page z-40 flex flex-col fade-in">
-                        <div className="pt-14 pb-4 px-7 blur-bar sticky top-0 z-10 text-center"
-                             style={{ borderBottom: '1px solid var(--line)' }}>
-                            <p className="eyebrow">{t.resultTitle}</p>
-                            <p className="text-[15px] font-semibold mt-1">{formData.name}</p>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto px-6 pt-6 pb-52 space-y-5">
-                            <Summary bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone}
-                                     duration={isOwnOption(formData.time) ? formData.customTime : formData.time}
-                                     emotions={[...formData.emotions, formData.customEmotion]} />
-                            <div className="surface p-6 report" dangerouslySetInnerHTML={{ __html: reportHtml }}></div>
-                            <BodyMap bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone} />
-                            <Chain steps={chain} lang={lang || 'ru'} />
-                            <Support items={support} lang={lang || 'ru'} />
-                            <Conclusion bodyKey={bodyKey} lang={lang || 'ru'} />
-                            <NextStep lang={lang || 'ru'} />
-                        </div>
-
-                        <div className="absolute bottom-0 left-0 right-0 px-6 pt-4 pb-8 blur-bar z-20 space-y-3"
-                             style={{ borderTop: '1px solid var(--line)' }}>
-                            <button onClick={() => trackButtonClick('Консультация', LINK_CONSULTATION)}
-                                    disabled={!LINK_CONSULTATION} className="btn btn-primary">
-                                {t.consultBtn}
-                            </button>
-                            <button onClick={() => trackButtonClick('Бесплатные уроки', LINK_LESSONS)}
-                                    disabled={!LINK_LESSONS} className="btn btn-ghost">
-                                {t.lessonsBtn}
-                            </button>
-                        </div>
-                    </div>
-                )}
+                </footer>
             </div>
         );
     };
