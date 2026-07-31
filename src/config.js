@@ -19,6 +19,16 @@ export const LINK_CONSULTATION = 'https://wa.clck.bar/162073';
 export const INSTAGRAM_HANDLE = '@zhanibek.makash';
 export const INSTAGRAM_URL = 'https://www.instagram.com/zhanibek.makash';
 
+// ─── Оплата полного курса (23 урока) на странице /lessons ───
+// Пусто — кнопка оплаты неактивна, но страница работает. Нужна ссылка Kaspi
+// именно этого эксперта (Kaspi.kz Pay) — нельзя использовать чужую ссылку.
+export const KASPI_PAY_URL = '';
+// Номер карты для перевода, если нужен способ помимо Kaspi (необязательно)
+export const CARD_NUMBER = '';
+// Куда присылать чек об оплате — по умолчанию тот же WhatsApp, что и для записи
+export const RECEIPT_WHATSAPP_URL = LINK_CONSULTATION;
+export const COURSE_PRICE = ''; // например «15 000 ₸» — подставится в текст оплаты
+
 // Google Таблица (Apps Script Web App). Пусто — отправка выключена.
 export const GOOGLE_SHEET_URL = '';
 
