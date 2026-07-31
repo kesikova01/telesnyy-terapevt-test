@@ -3,7 +3,7 @@ import { LESSONS_TEXT, LESSONS } from '../data/lessonsContent';
 import LessonPlayer from './LessonPlayer';
 import {
     INSTAGRAM_HANDLE, INSTAGRAM_URL,
-    KASPI_PAY_URL, CARD_NUMBER, RECEIPT_WHATSAPP_URL, COURSE_PRICE,
+    KASPI_PAY_URL, CARD_NUMBER, RECEIPT_WHATSAPP_URL, COURSE_PRICE, COURSE_PRICE_OLD,
 } from '../config';
 import expertPhoto from '../assets/expert-photo.jpg';
 
@@ -152,8 +152,16 @@ export default function LessonsPage() {
                 <div className="surface p-7 text-center fade-in" style={{ background: 'var(--accent-soft)' }}>
                     <h3 className="display text-[20px] mb-3">{t.payTitle}</h3>
                     <p className="text-[15px] leading-relaxed mb-1">{t.payText}</p>
-                    {COURSE_PRICE && <p className="text-[15px] font-semibold mb-5">{COURSE_PRICE}</p>}
-                    {!COURSE_PRICE && <div className="mb-5" />}
+                    {COURSE_PRICE ? (
+                        <p className="mb-5 flex items-baseline justify-center gap-2.5 flex-wrap">
+                            {COURSE_PRICE_OLD && (
+                                <span className="text-[15px] muted" style={{ textDecoration: 'line-through' }}>
+                                    {COURSE_PRICE_OLD}
+                                </span>
+                            )}
+                            <span className="text-[20px] font-semibold">{COURSE_PRICE}</span>
+                        </p>
+                    ) : <div className="mb-5" />}
 
                     {KASPI_PAY_URL ? (
                         <a href={KASPI_PAY_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mb-3">

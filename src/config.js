@@ -27,7 +27,10 @@ export const KASPI_PAY_URL = '';
 export const CARD_NUMBER = '';
 // Куда присылать чек об оплате — по умолчанию тот же WhatsApp, что и для записи
 export const RECEIPT_WHATSAPP_URL = LINK_CONSULTATION;
-export const COURSE_PRICE = ''; // например «15 000 ₸» — подставится в текст оплаты
+// Цена показывается как скидка: старая цена зачёркнута, рядом — новая.
+// Оставить COURSE_PRICE_OLD пустым, если скидку показывать не нужно — тогда останется одна цена.
+export const COURSE_PRICE_OLD = '150 000 ₸';
+export const COURSE_PRICE = '9 490 ₸';
 
 // Google Таблица (Apps Script Web App). Пусто — отправка выключена.
 export const GOOGLE_SHEET_URL = '';
