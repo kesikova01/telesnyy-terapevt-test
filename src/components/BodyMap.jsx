@@ -30,7 +30,7 @@ const SPOTS = [
   { zone: 'lowerback', id: 'zone-lowerback', cx: 100, cy: 180, r: 26 },
 ];
 
-export default function BodyMap({ bodyKey, lang = 'ru', extraZone = null }) {
+export default function BodyMap({ bodyKey, lang = 'ru', extraZone = null, delay = 0 }) {
   const t = TEXT[lang] || TEXT.ru;
   const ui = UI[lang] || UI.ru;
   const info = ZONE_INFO[lang] || ZONE_INFO.ru;
@@ -66,7 +66,7 @@ export default function BodyMap({ bodyKey, lang = 'ru', extraZone = null }) {
   }[strength(selected)];
 
   return (
-    <div className="surface p-6 text-center fade-in">
+    <div className="surface p-6 text-center fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="eyebrow">{t.label}</div>
       <h3 className="display text-[21px] mt-2 mb-4">{t.title}</h3>
       <p className="text-[12.5px] muted mb-4">{ui.zoneHint}</p>
@@ -95,9 +95,11 @@ export default function BodyMap({ bodyKey, lang = 'ru', extraZone = null }) {
             <path d="M128,395 L140,412" />
           </g>
 
-          {/* свечение зон */}
+          {/* свечение зон — активные зоны слегка «дышат» при первом появлении */}
           {SPOTS.map(s => (
-            <circle key={s.id} className="heat-zone" cx={s.cx} cy={s.cy} r={s.r}
+            <circle key={s.id}
+                    className={`heat-zone ${opacityOf(s.zone) > 0 ? 'heat-zone-pulse' : ''}`}
+                    cx={s.cx} cy={s.cy} r={s.r}
                     fill="url(#heatGrad)" style={{ opacity: opacityOf(s.zone) }} />
           ))}
 

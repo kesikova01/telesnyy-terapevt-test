@@ -7,7 +7,7 @@ const zoneNames = (zones, lang) => {
   return zones.map(z => info[z].name.toLowerCase()).join(', ');
 };
 
-export function Summary({ bodyKey, lang, duration, emotions, extraZone }) {
+export function Summary({ bodyKey, lang, duration, emotions, extraZone, delay = 0 }) {
   const ui = UI[lang] || UI.ru;
   const factor = (MAIN_FACTOR[lang] || MAIN_FACTOR.ru)[bodyKey];
   const base = BODY_ZONES[bodyKey] || BODY_ZONES.default;
@@ -25,7 +25,7 @@ export function Summary({ bodyKey, lang, duration, emotions, extraZone }) {
     : null;
 
   return (
-    <div className="surface p-6 fade-in">
+    <div className="surface p-6 fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="eyebrow">{ui.summaryLabel}</div>
       <h3 className="display text-[21px] mt-2 mb-3">{ui.summaryTitle}</h3>
       <p className="text-[16px] leading-relaxed muted">{text}</p>
@@ -34,10 +34,10 @@ export function Summary({ bodyKey, lang, duration, emotions, extraZone }) {
   );
 }
 
-export function Chain({ steps, lang }) {
+export function Chain({ steps, lang, delay = 0 }) {
   const ui = UI[lang] || UI.ru;
   return (
-    <div className="surface p-6 fade-in">
+    <div className="surface p-6 fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="eyebrow">{ui.chainLabel}</div>
       <h3 className="display text-[21px] mt-2 mb-5">{ui.chainTitle}</h3>
 
@@ -61,10 +61,10 @@ export function Chain({ steps, lang }) {
   );
 }
 
-export function Support({ items, lang }) {
+export function Support({ items, lang, delay = 0 }) {
   const ui = UI[lang] || UI.ru;
   return (
-    <div className="surface p-6 fade-in">
+    <div className="surface p-6 fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="eyebrow">{ui.supportLabel}</div>
       <h3 className="display text-[21px] mt-2 mb-4">{ui.supportTitle}</h3>
       {items.length === 0 ? (
@@ -86,7 +86,7 @@ export function Support({ items, lang }) {
   );
 }
 
-export function Conclusion({ bodyKey, lang }) {
+export function Conclusion({ bodyKey, lang, delay = 0 }) {
   const ui = UI[lang] || UI.ru;
   const factor = (MAIN_FACTOR[lang] || MAIN_FACTOR.ru)[bodyKey];
 
@@ -95,7 +95,7 @@ export function Conclusion({ bodyKey, lang }) {
     : `По вашим ответам наиболее вероятно, что главный фактор вашего состояния связан с ${factor}. Если оставить это без внимания, состояние может сохраняться.`;
 
   return (
-    <div className="surface p-6 fade-in">
+    <div className="surface p-6 fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="eyebrow">{ui.conclusionLabel}</div>
       <p className="text-[16px] leading-relaxed mt-3">{text}</p>
       <p className="text-[13.5px] leading-relaxed muted mt-4 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
@@ -105,10 +105,10 @@ export function Conclusion({ bodyKey, lang }) {
   );
 }
 
-export function NextStep({ lang }) {
+export function NextStep({ lang, delay = 0 }) {
   const ui = UI[lang] || UI.ru;
   return (
-    <div className="surface p-6 text-center fade-in" style={{ background: 'var(--accent-soft)' }}>
+    <div className="surface p-6 text-center fade-in" style={{ background: 'var(--accent-soft)', animationDelay: `${delay}ms` }}>
       <div className="eyebrow">{ui.nextLabel}</div>
       <h3 className="display text-[22px] mt-2 mb-3">{ui.nextTitle}</h3>
       <p className="text-[15.5px] leading-relaxed muted">{ui.nextText}</p>

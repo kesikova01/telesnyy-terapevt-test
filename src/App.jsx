@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { PSYCHO_DB } from './data/psychoDb';
 import BodyMap from './components/BodyMap';
+import TypingLoader from './components/TypingLoader';
+import ShareCard from './components/ShareCard';
 import { Summary, Chain, Support, Conclusion, NextStep } from './components/Insights';
 import {
   ADAPTIVE_STATEMENT,
   COMMON_STATEMENTS,
   ANSWER_OPTIONS,
   ZONE_INFO,
+  PATTERN_LABEL,
   UI,
 } from './data/insights';
 import { BODY_ZONES } from './data/bodyMap';
@@ -72,6 +75,7 @@ export default function App() {
     const [chain, setChain] = useState([]);
     const [support, setSupport] = useState([]);
     const [error, setError] = useState('');
+    const [theme, setTheme] = useState('light');
 
     // Админка и данные
     const [showAdmin, setShowAdmin] = useState(false);
@@ -97,7 +101,25 @@ export default function App() {
             setFormData(DEMO_FORM);
             setStep(10);
         }
+
+        // Тема: сохранённый выбор важнее системной — иначе подстраиваемся под устройство
+        const savedTheme = localStorage.getItem('themePref');
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+            setTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        }
     }, []);
+
+    useEffect(() => {
+        document.documentElement.dataset.theme = theme;
+    }, [theme]);
+
+    const toggleTheme = () => {
+        const next = theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        localStorage.setItem('themePref', next);
+    };
 
     // Демо-режим: как только анкета подставилась — сразу собираем разбор
     useEffect(() => {
@@ -189,7 +211,7 @@ export default function App() {
             emotionOptions: ["Страх", "Гнев", "Обида", "Вина", "Стыд", "Одиночество", "Беспомощность", "Разочарование"],
             customOptionPlace: "Напишите свой вариант", analyzeBtn: "Получить глубокий разбор",
             analyzingText: "Составляем детальный анализ ваших блокировок...", resultTitle: "Ваш персональный разбор",
-            lessonsBtn: "Бесплатные уроки", consultBtn: "Записаться на консультацию",
+            lessonsBtn: "Посмотреть 3 бесплатных урока «Телесно-ориентированной терапии»", consultBtn: "Запись на персональный разбор",
             healthPlace: "Сюда напишите свою проблему со здоровьем",
             relPlace: "Сюда напишите свою проблему в отношениях",
             moneyPlace: "Сюда напишите свою проблему с деньгами и карьерой",
@@ -219,7 +241,7 @@ export default function App() {
             emotionOptions: ["Қорқыныш", "Ашу", "Реніш", "Кінә", "Ұят", "Жалғыздық", "Дәрменсіздік", "Көңіл қалу"],
             customOptionPlace: "Өз нұсқаңызды жазыңыз", analyzeBtn: "Терең талдауды алу",
             analyzingText: "Сіздің ішкі блоктарыңыздың детальды талдауын құрастырудамыз...", resultTitle: "Сіздің жеке талдауыңыз",
-            lessonsBtn: "Тегін сабақтар", consultBtn: "Консультацияға жазылу",
+            lessonsBtn: "«Дене-бағдарлы терапия» бойынша 3 тегін сабақты көру", consultBtn: "Жеке талдауға жазылу",
             healthPlace: "Денсаулық мәселеңізді осы жерге жазыңыз",
             relPlace: "Қарым-қатынастағы мәселеңізді осы жерге жазыңыз",
             moneyPlace: "Ақша мен карьерадағы мәселеңізді осы жерге жазыңыз",
@@ -468,6 +490,31 @@ export default function App() {
         return { items, zone };
     };
 
+    // Фразы для экрана загрузки: печатаются по буквам, третья ссылается
+    // на реально найденную зону — усиливает ощущение живого анализа
+    const buildLoadingPhrases = () => {
+        const l = lang || 'ru';
+        const info = ZONE_INFO[l] || ZONE_INFO.ru;
+        const matched = findMatch();
+        const primaryZone = (BODY_ZONES[matched.key] || BODY_ZONES.default)[0];
+        const zoneName = info[primaryZone].name.toLowerCase();
+
+        if (l === 'kz') {
+            return [
+                'Жауаптарыңызды оқып жатырмыз…',
+                'Эмоциялар мен дене реакцияларын салыстырамыз…',
+                `«${zoneName}» аймағындағы сәйкестікті іздейміз…`,
+                'Жеке паттеріңізді құрастырамыз…',
+            ];
+        }
+        return [
+            'Читаем ваши ответы…',
+            'Сопоставляем эмоции и реакции тела…',
+            `Ищем совпадения в зоне «${zoneName}»…`,
+            'Формируем ваш персональный паттерн…',
+        ];
+    };
+
     const generateReport = () => {
         setIsLoading(true);
         setStep(11);
@@ -506,7 +553,7 @@ export default function App() {
             sendToGoogleSheet(newRecord);
 
             setIsLoading(false);
-        }, 1400);
+        }, 3600); // время подобрано под цикл фраз в TypingLoader
     };
 
     // Функция для сохранения нажатий на кнопки
@@ -540,6 +587,22 @@ export default function App() {
             alert('Неверный пароль!');
         }
     };
+
+    const themeToggle = (
+        <button onClick={toggleTheme} aria-label="Переключить тему"
+                className="theme-toggle fixed top-4 right-4 z-30">
+            {theme === 'dark' ? (
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="8.5" cy="8.5" r="3.6" />
+                    <path d="M8.5 1v1.8M8.5 14.2V16M16 8.5h-1.8M2.8 8.5H1M13.6 3.4l-1.3 1.3M4.7 12.3l-1.3 1.3M13.6 13.6l-1.3-1.3M4.7 4.7 3.4 3.4" />
+                </svg>
+            ) : (
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 9.3A6.2 6.2 0 1 1 6.7 2 4.9 4.9 0 0 0 14 9.3Z" />
+                </svg>
+            )}
+        </button>
+    );
 
     const renderLanguage = () => (
         <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 fade-in relative">
@@ -632,10 +695,8 @@ export default function App() {
     const renderResult = () => {
         if (isLoading) {
             return (
-                <div className="min-h-screen flex flex-col items-center justify-center gap-7 px-8 fade-in">
-                    <div className="w-9 h-9 rounded-full animate-spin"
-                         style={{ border: '2px solid var(--line)', borderTopColor: 'var(--accent)' }}></div>
-                    <p className="text-[15px] muted text-center max-w-[320px]">{t.analyzingText}</p>
+                <div className="min-h-screen flex flex-col items-center justify-center px-8 fade-in">
+                    <TypingLoader phrases={buildLoadingPhrases()} />
                 </div>
             );
         }
@@ -653,32 +714,48 @@ export default function App() {
                 <main className="flex-1 w-full max-w-[680px] xl:max-w-[1120px] mx-auto px-6 md:px-10 py-6 md:py-10">
                     <div className="grid gap-5 xl:grid-cols-2 xl:items-start">
                         <div className="space-y-5">
-                            <Summary bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone}
+                            <Summary bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone} delay={0}
                                      duration={isOwnOption(formData.time) ? formData.customTime : formData.time}
                                      emotions={[...formData.emotions, formData.customEmotion]} />
-                            <div className="surface p-6 md:p-8 report" dangerouslySetInnerHTML={{ __html: reportHtml }}></div>
+                            <div className="surface p-6 md:p-8 report fade-in" style={{ animationDelay: '90ms' }}
+                                 dangerouslySetInnerHTML={{ __html: reportHtml }}></div>
                         </div>
                         <div className="space-y-5">
-                            <BodyMap bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone} />
-                            <Chain steps={chain} lang={lang || 'ru'} />
-                            <Support items={support} lang={lang || 'ru'} />
-                            <Conclusion bodyKey={bodyKey} lang={lang || 'ru'} />
-                            <NextStep lang={lang || 'ru'} />
+                            <BodyMap key={`${bodyKey}-${extraZone || 'x'}`} bodyKey={bodyKey} lang={lang || 'ru'} extraZone={extraZone} delay={140} />
+                            <Chain steps={chain} lang={lang || 'ru'} delay={230} />
+                            <Support items={support} lang={lang || 'ru'} delay={320} />
+                            <Conclusion bodyKey={bodyKey} lang={lang || 'ru'} delay={410} />
+                            <NextStep lang={lang || 'ru'} delay={500} />
+                            <ShareCard bodyKey={bodyKey} extraZone={extraZone} lang={lang || 'ru'} delay={590} />
                         </div>
                     </div>
                 </main>
 
                 <footer className="sticky bottom-0 z-20 blur-bar" style={{ borderTop: '1px solid var(--line)' }}>
-                    <div className="mx-auto w-full max-w-[680px] xl:max-w-[900px] px-6 md:px-10 py-4 md:py-5
-                                    flex flex-col md:flex-row gap-3">
-                        <button onClick={() => trackButtonClick('Консультация', LINK_CONSULTATION)}
-                                disabled={!LINK_CONSULTATION} className="btn btn-primary md:flex-1">
-                            {t.consultBtn}
-                        </button>
-                        <button onClick={() => trackButtonClick('Бесплатные уроки', LINK_LESSONS)}
-                                disabled={!LINK_LESSONS} className="btn btn-ghost md:flex-1">
-                            {t.lessonsBtn}
-                        </button>
+                    <div className="mx-auto w-full max-w-[680px] xl:max-w-[900px] px-6 md:px-10 py-4 md:py-5">
+                        {(() => {
+                            const l = lang || 'ru';
+                            const ui = UI[l] || UI.ru;
+                            const label = (PATTERN_LABEL[l] || PATTERN_LABEL.ru)[bodyKey] || (PATTERN_LABEL[l] || PATTERN_LABEL.ru).default;
+                            return (
+                                <div className="mb-4 text-center md:text-left">
+                                    <p className="eyebrow mb-1">{ui.patternEyebrow}</p>
+                                    <p className="text-[15.5px] leading-snug">
+                                        <strong>{label}</strong> — {ui.patternSuffix}
+                                    </p>
+                                </div>
+                            );
+                        })()}
+                        <div className="flex flex-col md:flex-row gap-3">
+                            <button onClick={() => trackButtonClick('Консультация', LINK_CONSULTATION)}
+                                    disabled={!LINK_CONSULTATION} className="btn btn-primary md:flex-1">
+                                {t.consultBtn}
+                            </button>
+                            <button onClick={() => trackButtonClick('Бесплатные уроки', LINK_LESSONS)}
+                                    disabled={!LINK_LESSONS} className="btn btn-ghost md:flex-1">
+                                {t.lessonsBtn}
+                            </button>
+                        </div>
                     </div>
                 </footer>
             </div>
@@ -845,6 +922,7 @@ export default function App() {
     if (showAdmin) {
         return (
             <div className="min-h-screen page p-6 md:p-10 fade-in">
+                {themeToggle}
                 <div className="max-w-3xl mx-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="display text-[24px]">Анкеты клиентов</h1>
@@ -904,6 +982,7 @@ export default function App() {
 
     return (
         <>
+            {themeToggle}
             {renderStep()}
 
             {showPasswordModal && (
