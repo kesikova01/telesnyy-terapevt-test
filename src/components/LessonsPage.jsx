@@ -5,7 +5,7 @@ import {
     INSTAGRAM_HANDLE, INSTAGRAM_URL,
     KASPI_PAY_URL, CARD_NUMBER, RECEIPT_WHATSAPP_URL, COURSE_PRICE, COURSE_PRICE_OLD,
 } from '../config';
-import expertPhoto from '../assets/expert-photo.jpg';
+import expertPhoto from '../assets/expert-photo-portrait.jpg';
 
 // Мини-сайт «Бесплатные уроки» — открывается по адресу /lessons.
 // Первые 3 урока из LESSONS играются прямо на странице (нужно вписать
