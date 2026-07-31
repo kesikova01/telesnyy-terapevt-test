@@ -64,13 +64,17 @@ function doPost(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// Разбор ("расшифровка") приходит html-текстом — убираем теги, чтобы
-// в ячейке был читаемый текст, а не <h3>, <p> и т.д.
+// Разбор ("расшифровка") приходит html-текстом — убираем теги, чтобы в ячейке
+// был читаемый текст, а не <h3>, <p> и т.д. Разделяем блоки через « | »
+// одной строкой (а не переносами \n) — иначе Google Таблицы по умолчанию
+// показывают только первую строку ячейки, и кажется, что текст обрезан,
+// хотя на самом деле просто скрыт, пока не развернуть строку формул.
 function stripHtml(html) {
   if (!html) return '';
   return html
-    .replace(/<\/(p|h1|h2|h3|h4|li|div|blockquote)>/gi, '\n')
+    .replace(/<\/(h1|h2|h3|h4|p|div|blockquote)>/gi, ' | ')
     .replace(/<li[^>]*>/gi, '• ')
+    .replace(/<\/li>/gi, '; ')
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
@@ -78,7 +82,11 @@ function stripHtml(html) {
     .replace(/&raquo;/g, '»')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
-    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\s*\n\s*/g, ' ')
+    .replace(/\s*\|\s*\|+\s*/g, ' | ')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^\s*\|\s*/, '')
+    .replace(/\s*\|\s*$/, '')
     .trim();
 }
 

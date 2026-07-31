@@ -32,8 +32,8 @@ export const RECEIPT_WHATSAPP_URL = 'https://wa.clck.bar/77478583439?text=%D0%A2
 export const COURSE_PRICE_OLD = '150 000 ₸';
 export const COURSE_PRICE = '9 490 ₸';
 
-// Google Таблица (Apps Script Web App). Пусто — отправка выключена.
-export const GOOGLE_SHEET_URL = '';
+// Google Таблица (Apps Script Web App).
+export const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxIHOOWw426dOiE0KH5gXS3EV9iVUbv0DMYX1SxSCBN2OLwUUNQr-xAK_a_3-DnZiS7zQ/exec';
 
 // Supabase — база анкет клиентов, общая для всех устройств админки.
 const SUPABASE_URL = 'https://tkntgiztbaalpamsiwsa.supabase.co';
