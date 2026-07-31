@@ -35,9 +35,9 @@ export const COURSE_PRICE = '9 490 ₸';
 // Google Таблица (Apps Script Web App). Пусто — отправка выключена.
 export const GOOGLE_SHEET_URL = '';
 
-// Supabase. Пусто — отправка выключена.
-const SUPABASE_URL = '';
-const SUPABASE_KEY = '';
+// Supabase — база анкет клиентов, общая для всех устройств админки.
+const SUPABASE_URL = 'https://tkntgiztbaalpamsiwsa.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrbnRnaXp0YmFhbHBhbXNpd3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1MjEzNzEsImV4cCI6MjEwMTA5NzM3MX0.vPgS8Iwx4noAvbarGUrvoDDGT21kYay35DRxDzD6ItI';
 
 // Имя функции базы, которая принимает анкету (RPC).
 export const SUPABASE_RPC = 'save_body_result';
