@@ -365,3 +365,11 @@ body {
 }
 
 .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Вариант пошире — иконка + подпись (ник в инстаграме внизу страницы уроков) */
+.icon-btn-wide {
+    width: auto;
+    height: auto;
+    padding: 10px 20px;
+    gap: 9px;
+}

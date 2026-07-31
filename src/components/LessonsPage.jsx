@@ -4,6 +4,7 @@ import LessonPlayer from './LessonPlayer';
 import {
     INSTAGRAM_HANDLE, INSTAGRAM_URL,
     KASPI_PAY_URL, CARD_NUMBER, RECEIPT_WHATSAPP_URL, COURSE_PRICE, COURSE_PRICE_OLD,
+    LINK_CONSULTATION,
 } from '../config';
 import expertPhoto from '../assets/expert-photo-portrait.jpg';
 
@@ -182,20 +183,24 @@ export default function LessonsPage() {
                     <p className="text-[13.5px] muted leading-relaxed mb-4 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
                         {t.payReceiptNote}
                     </p>
-                    <a href={RECEIPT_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                    <a href={RECEIPT_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost mb-3">
                         {t.payReceiptBtn}
+                    </a>
+                    <a href={LINK_CONSULTATION} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                        {t.payConsultBtn}
                     </a>
                 </div>
 
-                {/* Соцсети — просто иконка, без давления */}
+                {/* Соцсети — иконка + ник, ведёт в инстаграм эксперта */}
                 <div className="flex justify-center mt-8 pb-6">
                     <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-                       aria-label={INSTAGRAM_HANDLE} className="icon-btn">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                       aria-label={INSTAGRAM_HANDLE} className="icon-btn icon-btn-wide">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="shrink-0">
                             <rect x="3" y="3" width="18" height="18" rx="5" />
                             <circle cx="12" cy="12" r="4" />
                             <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
                         </svg>
+                        <span className="text-[13px] font-medium">{INSTAGRAM_HANDLE}</span>
                     </a>
                 </div>
             </div>
