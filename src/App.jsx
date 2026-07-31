@@ -73,6 +73,8 @@ const DEMO_FORM = {
 export default function App() {
     const [step, setStep] = useState(0);
     const [lang, setLang] = useState(null);
+    // Язык офера на обложке (переключается наверху, не влияет на язык самого теста)
+    const [offerLang, setOfferLang] = useState('kz');
     const [isLoading, setIsLoading] = useState(false);
     const [reportHtml, setReportHtml] = useState('');
     const [bodyKey, setBodyKey] = useState('default');
@@ -588,47 +590,72 @@ export default function App() {
         }
     };
 
-    const renderLanguage = () => (
+    const renderLanguage = () => {
+        const em = (word) => <span style={{ color: 'var(--accent)' }}>{word}</span>;
+        const offerHeadline = offerLang === 'kz'
+            ? <>5 минутта {em('денсаулық')}, {em('қарым-қатынас')}, {em('ақшадағы')} мәселенің түпкі себебін тап!</>
+            : <>За 5 минут найдите первопричину проблем со {em('здоровьем')}, в {em('отношениях')} и {em('деньгах')}!</>;
+        const offerCaption = offerLang === 'kz'
+            ? <><span className="font-semibold">Телесный терапевт</span> — Жәнібек Мақаштың авторлық психосоматика және дене тесті</>
+            : <><span className="font-semibold">Телесный терапевт</span> — авторский тест Жанибек Макаш по психосоматике и работе с телом</>;
+
+        return (
         <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 fade-in relative">
             <div className="max-w-[400px] w-full text-center">
+                <div className="flex items-center justify-between mb-6">
+                    <span className="badge">3 сферы · 8 шагов · 5 минут</span>
+                    <div className="flex gap-1 p-1 rounded-full shrink-0" style={{ background: 'var(--surface-2)' }}>
+                        {['kz', 'ru'].map(code => (
+                            <button key={code} onClick={() => setOfferLang(code)}
+                                    className="px-3 py-1 rounded-full text-[11px] font-semibold uppercase transition-colors"
+                                    style={{
+                                        background: offerLang === code ? 'var(--accent)' : 'transparent',
+                                        color: offerLang === code ? 'var(--accent-ink)' : 'var(--ink-soft)',
+                                    }}>
+                                {code}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
                    className="eyebrow hover:opacity-70 transition-opacity inline-block mb-8" style={{ fontSize: 11 }}>
                     {INSTAGRAM_HANDLE}
                 </a>
 
-                <h1 className="display text-[22px] mb-3">
-                    5 минутта денсаулық, қарым-қатынас, ақшадағы мәселенің түпкі себебін тап!
+                <h1 className="display text-[28px] leading-tight">
+                    {offerHeadline}
                 </h1>
-                <p className="muted text-[15px] leading-relaxed">
-                    Телесный терапевт Жәнібек Мақаштың авторлық психосоматика және дене тесті
-                </p>
 
-                <div className="flex items-center justify-center gap-3 mt-7 mb-8">
+                <div className="flex items-center gap-3 mt-8 mb-8 text-left">
                     <img src={expertPhoto} alt="Жәнібек Мақаш"
                          className="w-14 h-16 rounded-xl object-cover shrink-0"
                          style={{ border: '1px solid var(--line)' }} />
-                    <div className="text-left">
-                        <div className="text-[15px] font-semibold">Жәнібек Мақаш</div>
-                        <div className="muted text-[13px]">Телесный терапевт</div>
-                    </div>
+                    <p className="text-[14px] leading-snug">
+                        {offerCaption}
+                    </p>
                 </div>
 
-                {/* Иконка-разделитель между казахским и русским офером — увеличительное стекло с пульсом («найти первопричину») */}
-                <div className="icon-tile w-11 h-11 rounded-2xl mx-auto mb-7">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="10" cy="10" r="6.5" />
-                        <path d="M6.2 10h1.8l1.4-3 2 6L12.8 10h1.6" />
-                        <path d="M15 15L20 20" />
+                {/* та же фигура, что и на телесной карте результата — иконка с подсвеченными зонами */}
+                <div className="relative w-[64px] mx-auto mb-7">
+                    <svg viewBox="0 0 200 420" className="w-full h-auto" fill="none"
+                         stroke="var(--figure)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="100" cy="35" r="26" />
+                        <path d="M92,58 L92,70 Q100,76 108,70 L108,58" />
+                        <path d="M70,80 Q100,66 130,80 L136,178 Q100,196 64,178 Z" />
+                        <path d="M70,82 Q40,110 35,190" />
+                        <path d="M130,82 Q160,110 165,190" />
+                        <circle cx="35" cy="197" r="7" />
+                        <circle cx="165" cy="197" r="7" />
+                        <path d="M78,193 L72,395" />
+                        <path d="M122,193 L128,395" />
+                        <path d="M72,395 L60,412" />
+                        <path d="M128,395 L140,412" />
+                        <circle cx="100" cy="107" r="30" fill="var(--heat)" opacity="0.5" style={{ filter: 'blur(9px)' }} stroke="none" />
+                        <circle cx="68" cy="83" r="18" fill="var(--heat)" opacity="0.3" style={{ filter: 'blur(8px)' }} stroke="none" />
+                        <circle cx="132" cy="83" r="18" fill="var(--heat)" opacity="0.3" style={{ filter: 'blur(8px)' }} stroke="none" />
                     </svg>
                 </div>
-
-                <p className="display text-[22px] mb-3">
-                    За 5 минут найдите первопричину проблем со здоровьем, в отношениях и деньгах!
-                </p>
-                <p className="muted text-[15px] leading-relaxed opacity-80">
-                    Авторский тест телесного терапевта Жанибек Макаш по психосоматике и работе с телом
-                </p>
 
                 <div className="rule w-14 mx-auto my-9"></div>
 
@@ -653,7 +680,8 @@ export default function App() {
                 </svg>
             </button>
         </div>
-    );
+        );
+    };
 
     const stepScreens = {
         3: ['healthTitle', 'healthDesc', 'health', 'healthPlace'],
