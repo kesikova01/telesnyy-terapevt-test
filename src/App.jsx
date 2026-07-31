@@ -79,7 +79,6 @@ export default function App() {
     const [chain, setChain] = useState([]);
     const [support, setSupport] = useState([]);
     const [error, setError] = useState('');
-    const [theme, setTheme] = useState('light');
 
     // Админка и данные
     const [showAdmin, setShowAdmin] = useState(false);
@@ -108,25 +107,7 @@ export default function App() {
             setFormData(DEMO_FORM);
             setStep(10);
         }
-
-        // Тема: сохранённый выбор важнее системной — иначе подстраиваемся под устройство
-        const savedTheme = localStorage.getItem('themePref');
-        if (savedTheme === 'dark' || savedTheme === 'light') {
-            setTheme(savedTheme);
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setTheme('dark');
-        }
     }, []);
-
-    useEffect(() => {
-        document.documentElement.dataset.theme = theme;
-    }, [theme]);
-
-    const toggleTheme = () => {
-        const next = theme === 'dark' ? 'light' : 'dark';
-        setTheme(next);
-        localStorage.setItem('themePref', next);
-    };
 
     // Печать анкеты из админки: печатный лист рендерится скрыто (.print-sheet),
     // после его появления в DOM вызываем системный диалог печати —
@@ -606,22 +587,6 @@ export default function App() {
         }
     };
 
-    const themeToggle = (
-        <button onClick={toggleTheme} aria-label="Переключить тему"
-                className="theme-toggle fixed top-4 right-4 z-30">
-            {theme === 'dark' ? (
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="8.5" cy="8.5" r="3.6" />
-                    <path d="M8.5 1v1.8M8.5 14.2V16M16 8.5h-1.8M2.8 8.5H1M13.6 3.4l-1.3 1.3M4.7 12.3l-1.3 1.3M13.6 13.6l-1.3-1.3M4.7 4.7 3.4 3.4" />
-                </svg>
-            ) : (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 9.3A6.2 6.2 0 1 1 6.7 2 4.9 4.9 0 0 0 14 9.3Z" />
-                </svg>
-            )}
-        </button>
-    );
-
     const renderLanguage = () => (
         <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 fade-in relative">
             <div className="max-w-[400px] w-full text-center">
@@ -929,7 +894,7 @@ export default function App() {
                 <footer className="sticky bottom-0 z-20 blur-bar" style={{ borderTop: '1px solid var(--line)' }}>
                     <div className="mx-auto w-full max-w-[680px] px-6 md:px-10 py-4 md:py-5">
                         {error && (
-                            <div className="mb-3 flex items-start text-[#C0392B] text-[14px] leading-snug fade-in">
+                            <div className="mb-3 flex items-start text-[#FB7185] text-[14px] leading-snug fade-in">
                                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" className="mt-[3px] mr-2 shrink-0">
                                     <circle cx="8" cy="8" r="6.6" />
                                     <path d="M8 4.6v4.2" strokeLinecap="round" />
@@ -959,7 +924,6 @@ export default function App() {
 
         return (
             <div className="min-h-screen page p-6 md:p-10 fade-in">
-                {themeToggle}
                 <PrintableReport record={printingRecord} />
                 <div className="max-w-3xl mx-auto">
                     <div className="flex justify-between items-center mb-6">
@@ -1048,7 +1012,6 @@ export default function App() {
 
     return (
         <>
-            {themeToggle}
             {renderStep()}
 
             {showPasswordModal && (

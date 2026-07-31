@@ -190,7 +190,7 @@ export default function LessonsPage() {
                 {/* Соцсети — просто иконка, без давления */}
                 <div className="flex justify-center mt-8 pb-6">
                     <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
-                       aria-label={INSTAGRAM_HANDLE} className="theme-toggle">
+                       aria-label={INSTAGRAM_HANDLE} className="icon-btn">
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
                             <rect x="3" y="3" width="18" height="18" rx="5" />
                             <circle cx="12" cy="12" r="4" />

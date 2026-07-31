@@ -55,17 +55,21 @@ async function drawCard(bodyKey, extraZone, lang) {
 
   const ui = UI[lang] || UI.ru;
 
-  ctx.fillStyle = '#F5F1EA';
+  // Тёмно-синий фон с лёгким виньетированием — как на остальном сайте
+  const bgGrad = ctx.createRadialGradient(W / 2, H * 0.35, 80, W / 2, H * 0.35, H * 0.9);
+  bgGrad.addColorStop(0, '#0B1120');
+  bgGrad.addColorStop(1, '#020617');
+  ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
   ctx.textAlign = 'center';
 
-  ctx.fillStyle = '#4B6B4F';
-  ctx.font = '500 26px "IBM Plex Mono", monospace';
+  ctx.fillStyle = '#2DD4BF';
+  ctx.font = '700 26px Inter, -apple-system, sans-serif';
   ctx.fillText(spaced(ui.shareCardEyebrow), W / 2, 130);
 
   const base = BODY_ZONES[bodyKey] || BODY_ZONES.default;
   const zones = extraZone && !base.includes(extraZone) ? [...base, extraZone] : base;
-  const opacityFor = (zone) => (zone === zones[0] ? 0.85 : zone === zones[1] ? 0.4 : zones.includes(zone) ? 0.25 : 0);
+  const opacityFor = (zone) => (zone === zones[0] ? 0.9 : zone === zones[1] ? 0.45 : zones.includes(zone) ? 0.28 : 0);
 
   const scale = 1.55;
   ctx.save();
@@ -76,15 +80,15 @@ async function drawCard(bodyKey, extraZone, lang) {
     const op = opacityFor(zone);
     if (op <= 0) return;
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    g.addColorStop(0, `rgba(224,122,63,${op})`);
-    g.addColorStop(1, 'rgba(224,122,63,0)');
+    g.addColorStop(0, `rgba(251,146,60,${op})`);
+    g.addColorStop(1, 'rgba(251,146,60,0)');
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fill();
   });
 
-  ctx.strokeStyle = '#B9AF9C';
+  ctx.strokeStyle = '#475569';
   ctx.lineWidth = 2.6;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -96,15 +100,15 @@ async function drawCard(bodyKey, extraZone, lang) {
   ctx.restore();
 
   const title = (PATTERN_LABEL[lang] || PATTERN_LABEL.ru)[bodyKey] || (PATTERN_LABEL[lang] || PATTERN_LABEL.ru).default;
-  ctx.fillStyle = '#2B2A26';
-  ctx.font = '600 58px Lora, Georgia, serif';
+  ctx.fillStyle = '#F8FAFC';
+  ctx.font = '700 58px Outfit, -apple-system, sans-serif';
   const lastTitleY = wrapText(ctx, title, W / 2, 950, 880, 68);
 
-  ctx.fillStyle = '#6E6759';
+  ctx.fillStyle = '#94A3B8';
   ctx.font = '400 30px Inter, -apple-system, sans-serif';
   ctx.fillText(ui.shareCaption, W / 2, lastTitleY + 70);
 
-  ctx.strokeStyle = '#E0D7C6';
+  ctx.strokeStyle = 'rgba(148,163,184,0.3)';
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(W / 2 - 60, lastTitleY + 130);
@@ -112,12 +116,12 @@ async function drawCard(bodyKey, extraZone, lang) {
   ctx.stroke();
 
   // Подпись эксперта вместо адреса сайта — картинка расходится в соцсетях сама по себе
-  ctx.fillStyle = '#2B2A26';
-  ctx.font = '600 30px Inter, -apple-system, sans-serif';
+  ctx.fillStyle = '#F8FAFC';
+  ctx.font = '700 30px Inter, -apple-system, sans-serif';
   ctx.fillText(INSTAGRAM_HANDLE, W / 2, lastTitleY + 190);
 
-  ctx.fillStyle = '#4B6B4F';
-  ctx.font = '500 21px "IBM Plex Mono", monospace';
+  ctx.fillStyle = '#2DD4BF';
+  ctx.font = '700 21px Inter, -apple-system, sans-serif';
   ctx.fillText(spaced(ui.shareFooter), W / 2, lastTitleY + 232);
 
   return canvas;

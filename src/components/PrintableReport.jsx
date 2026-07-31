@@ -18,11 +18,11 @@ function PrintBodyMap({ bodyKey, extraZone }) {
         <svg viewBox="0 0 200 420" width="150" style={{ display: 'block', margin: '0 auto' }}>
             <defs>
                 <radialGradient id="printHeat" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#E07A3F" stopOpacity="0.95" />
-                    <stop offset="100%" stopColor="#E07A3F" stopOpacity="0" />
+                    <stop offset="0%" stopColor="#F97316" stopOpacity="0.95" />
+                    <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
                 </radialGradient>
             </defs>
-            <g stroke="#B9AF9C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none">
+            <g stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none">
                 <circle cx="100" cy="35" r="26" />
                 <path d="M92,58 L92,70 Q100,76 108,70 L108,58" />
                 <path d="M70,80 Q100,66 130,80 L136,178 Q100,196 64,178 Z" />
@@ -62,20 +62,20 @@ export default function PrintableReport({ record }) {
 
     const row = (label, value) => (
         <div style={{ marginBottom: 14 }}>
-            <div style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4B6B4F', marginBottom: 3 }}>{label}</div>
-            <div style={{ fontSize: 14.5, lineHeight: 1.5, color: '#2B2A26' }}>{value || '—'}</div>
+            <div style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontWeight: 700, fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0D9488', marginBottom: 3 }}>{label}</div>
+            <div style={{ fontSize: 14.5, lineHeight: 1.5, color: '#1E293B' }}>{value || '—'}</div>
         </div>
     );
 
     return (
         <div className="print-sheet">
-            <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 40px', fontFamily: 'Inter, -apple-system, sans-serif', color: '#2B2A26' }}>
-                <div style={{ textAlign: 'center', marginBottom: 36, paddingBottom: 24, borderBottom: '1px solid #E0D7C6' }}>
-                    <div style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#4B6B4F' }}>
+            <div style={{ maxWidth: 720, margin: '0 auto', padding: '48px 40px', fontFamily: 'Inter, -apple-system, sans-serif', color: '#1E293B' }}>
+                <div style={{ textAlign: 'center', marginBottom: 36, paddingBottom: 24, borderBottom: '1px solid #E2E8F0' }}>
+                    <div style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#0D9488' }}>
                         Тест по первопричинам · @zhanibek.makash
                     </div>
-                    <h1 style={{ fontFamily: 'Lora, Georgia, serif', fontSize: 28, fontWeight: 600, marginTop: 10 }}>{record.name}</h1>
-                    <p style={{ color: '#6E6759', marginTop: 6, fontSize: 14.5 }}>{record.phone} · {record.date}</p>
+                    <h1 style={{ fontFamily: 'Outfit, -apple-system, sans-serif', fontSize: 28, fontWeight: 600, marginTop: 10 }}>{record.name}</h1>
+                    <p style={{ color: '#64748B', marginTop: 6, fontSize: 14.5 }}>{record.phone} · {record.date}</p>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 32px', marginBottom: 32 }}>
@@ -95,19 +95,19 @@ export default function PrintableReport({ record }) {
                     {row('Нажатые кнопки', (record.clickedButtons || []).join(' → '))}
                 </div>
 
-                <div style={{ marginBottom: 32, padding: '28px 20px', background: '#F3EEE4', borderRadius: 18, textAlign: 'center' }}>
-                    <div style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4B6B4F', marginBottom: 14 }}>
+                <div style={{ marginBottom: 32, padding: '28px 20px', background: '#F1F5F9', borderRadius: 18, textAlign: 'center' }}>
+                    <div style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontWeight: 700, fontSize: 10.5, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0D9488', marginBottom: 14 }}>
                         Телесная карта результата
                     </div>
                     <PrintBodyMap bodyKey={record.bodyKey} extraZone={record.extraZone} />
-                    <div style={{ fontSize: 13, color: '#6E6759', marginTop: 14 }}>
+                    <div style={{ fontSize: 13, color: '#64748B', marginTop: 14 }}>
                         {zoneNames || '—'}
                     </div>
                 </div>
 
                 {record.result && (
                     <div>
-                        <div style={{ fontFamily: '"IBM Plex Mono", monospace', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4B6B4F', marginBottom: 12, paddingTop: 24, borderTop: '1px solid #E0D7C6' }}>
+                        <div style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0D9488', marginBottom: 12, paddingTop: 24, borderTop: '1px solid #E2E8F0' }}>
                             Полная расшифровка
                         </div>
                         <div className="report" dangerouslySetInnerHTML={{ __html: record.result }} />
