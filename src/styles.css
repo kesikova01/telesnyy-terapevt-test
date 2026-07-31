@@ -327,6 +327,29 @@ body {
     100% { transform: scale(1); }
 }
 
+/* Печать одной анкеты из админки в PDF (Ctrl/Cmd+P → «Сохранить как PDF»).
+   Печатный лист специально светлый независимо от тёмной темы сайта —
+   тёмный фон на бумаге тратит чернила и плохо читается при печати. */
+.print-sheet { display: none; }
+
+@media print {
+    body * { visibility: hidden; }
+    .print-sheet, .print-sheet * { visibility: visible; }
+    .print-sheet { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+}
+
+/* .report переиспользуется из экрана результата (тёмные тона по умолчанию) —
+   внутри печатного листа переопределяем на тёмный текст по светлому фону. */
+.print-sheet .report h3 { color: #1E293B; border-bottom-color: #E2E8F0; }
+.print-sheet .report p,
+.print-sheet .report li { color: #475569; }
+.print-sheet .report em,
+.print-sheet .report strong { color: #1E293B; }
+.print-sheet .report li::before { background: #0D9488; }
+.print-sheet .report blockquote { background: #F1F5F9; color: #1E293B; }
+.print-sheet .report .highlight-box { background: #F1F5F9; }
+.print-sheet .report .highlight-box p { color: #1E293B; }
+
 /* Круглая кнопка-иконка (инстаграм внизу страницы уроков и т.п.) */
 .icon-btn {
     width: 40px;
