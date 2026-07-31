@@ -22,6 +22,7 @@ import {
   GOOGLE_SHEET_URL,
   ADMIN_PASSWORD,
   SUPABASE_RPC,
+  SUPABASE_ADMIN_RPC,
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
   supabaseClient,
@@ -88,6 +89,7 @@ export default function App() {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [passwordInput, setPasswordInput] = useState('');
     const [db, setDb] = useState([]);
+    const [dbLoading, setDbLoading] = useState(false);
     const [currentRecordId, setCurrentRecordId] = useState(null);
     const [adminSearch, setAdminSearch] = useState('');
     const [expandedRecordId, setExpandedRecordId] = useState(null);
@@ -165,34 +167,39 @@ export default function App() {
         sendToSupabase(recordToSave);
     };
 
+    // Отправляем анкету в Supabase целиком, той же формы, что лежит в localStorage —
+    // так при чтении в админке (loadDbFromSupabase) не нужно ничего пересобирать.
+    // client_id — общий ключ: по нему функция базы обновляет ту же строку повторно
+    // (например, когда клиент нажимает кнопку после разбора), а не плодит дубли.
     const sendToSupabase = async (recordToSave) => {
-        // Пока Supabase не подключён — анкета живёт только в браузере и в админке.
         if (!supabaseClient) return;
 
-        const row = {
-            client_id: String(recordToSave.id),
-            full_name: recordToSave.name || '',
-            phone: recordToSave.phone || '',
-            health: recordToSave.health || '',
-            relationships: recordToSave.relationships || '',
-            money: recordToSave.money || '',
-            self_esteem: recordToSave.selfEsteem || '',
-            time_lived: isOwnOption(recordToSave.time) ? recordToSave.customTime : recordToSave.time,
-            situation: recordToSave.situation || '',
-            emotions: (recordToSave.emotions || []).join(', ') + (recordToSave.customEmotion ? ` (${recordToSave.customEmotion})` : ''),
-            clarify: Object.values(recordToSave.clarify || {}).join(', '),
-            body_zones: [recordToSave.bodyKey, recordToSave.extraZone].filter(Boolean).join(', '),
-            chain: (recordToSave.chain || []).join(' → '),
-            result: recordToSave.result || '',
-            clicked_buttons: (recordToSave.clickedButtons || []).join(', '),
-            lang: recordToSave.lang || ''
-        };
-
-        // Пишем через функцию базы: сайту доступна только запись.
-        // Читать анкеты по этому ключу нельзя — данные клиентов защищены.
-        const { error } = await supabaseClient.rpc(SUPABASE_RPC, { payload: row });
+        const payload = { ...recordToSave, client_id: String(recordToSave.id) };
+        const { error } = await supabaseClient.rpc(SUPABASE_RPC, { payload });
 
         if (error) console.log('Ошибка при отправке в Supabase:', error);
+    };
+
+    // Подтягиваем анкеты из Supabase при входе в админку — так эксперт видит
+    // одну и ту же базу с любого устройства, а не только то, что сохранено
+    // в localStorage этого конкретного браузера.
+    const loadDbFromSupabase = async () => {
+        if (!supabaseClient) return;
+        setDbLoading(true);
+
+        const { data, error } = await supabaseClient.rpc(SUPABASE_ADMIN_RPC, { admin_key: ADMIN_PASSWORD });
+        setDbLoading(false);
+
+        if (error) { console.log('Ошибка при загрузке базы из Supabase:', error); return; }
+
+        const remoteRecords = (data || []).map(row => row.data);
+        const merged = new Map();
+        db.forEach(r => merged.set(r.id, r));
+        remoteRecords.forEach(r => merged.set(r.id, r));
+        const mergedList = Array.from(merged.values()).sort((a, b) => a.id - b.id);
+
+        setDb(mergedList);
+        localStorage.setItem('bodyTherapistDB', JSON.stringify(mergedList));
     };
 
     const translations = {
@@ -585,6 +592,7 @@ export default function App() {
             setShowPasswordModal(false);
             setShowAdmin(true);
             setPasswordInput('');
+            loadDbFromSupabase();
         } else {
             alert('Неверный пароль!');
         }
@@ -951,10 +959,17 @@ export default function App() {
             <div className="min-h-screen page p-6 md:p-10 fade-in">
                 <PrintableReport record={printingRecord} />
                 <div className="max-w-3xl mx-auto">
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex justify-between items-center mb-2">
                         <h1 className="display text-[24px]">Анкеты клиентов</h1>
                         <button onClick={() => setShowAdmin(false)} className="px-4 py-2 rounded-xl text-[14px] muted transition-colors" style={{ border: '1px solid var(--line)' }}>Выйти</button>
                     </div>
+
+                    {supabaseClient && (
+                        <p className="muted text-[13px] mb-6">
+                            {dbLoading ? 'Синхронизация с базой…' : 'База обновлена — видно со всех устройств'}
+                        </p>
+                    )}
+                    {!supabaseClient && <div className="mb-6" />}
 
                     {db.length > 0 && (
                         <input type="text" className="field-input mb-6" placeholder="Поиск по имени или номеру телефона"

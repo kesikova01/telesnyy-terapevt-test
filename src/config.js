@@ -41,6 +41,8 @@ const SUPABASE_KEY = '';
 
 // Имя функции базы, которая принимает анкету (RPC).
 export const SUPABASE_RPC = 'save_body_result';
+// Имя функции базы, которая отдаёт всю базу анкет для админки (RPC).
+export const SUPABASE_ADMIN_RPC = 'get_body_results';
 
 export const supabaseClient =
   SUPABASE_URL && SUPABASE_KEY ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
