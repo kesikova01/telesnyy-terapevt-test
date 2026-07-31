@@ -6,19 +6,14 @@ import { createClient } from '@supabase/supabase-js';
 //  в браузере (localStorage) и видны в админке.
 // ─────────────────────────────────────────────────────────────
 
-// WhatsApp эксперта — только цифры, без + и пробелов
-export const WHATSAPP_NUMBER = '';
-
 // Телеграм-канал с бесплатными уроками
 export const LINK_LESSONS = '';
 
 // Пароль от админки (иконка замка на первом экране)
 export const ADMIN_PASSWORD = 'telo2026';
 
-export const LINK_CONSULTATION = WHATSAPP_NUMBER
-  ? `https://wa.me/${WHATSAPP_NUMBER}?text=` +
-    encodeURIComponent('Здравствуйте! Хочу записаться на консультацию по результатам теста.')
-  : '';
+// Готовая короткая ссылка на запись — кнопка «Запись на персональный разбор»
+export const LINK_CONSULTATION = 'https://wa.clck.bar/162073';
 
 // Google Таблица (Apps Script Web App). Пусто — отправка выключена.
 export const GOOGLE_SHEET_URL = '';
