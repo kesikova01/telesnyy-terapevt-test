@@ -3,7 +3,6 @@ import { PSYCHO_DB } from './data/psychoDb';
 import BodyMap from './components/BodyMap';
 import TypingLoader from './components/TypingLoader';
 import ShareCard from './components/ShareCard';
-import PrintableReport from './components/PrintableReport';
 import { Summary, Chain, Support, Conclusion, NextStep } from './components/Insights';
 import {
   ADAPTIVE_STATEMENT,
@@ -88,7 +87,6 @@ export default function App() {
     const [currentRecordId, setCurrentRecordId] = useState(null);
     const [adminSearch, setAdminSearch] = useState('');
     const [expandedRecordId, setExpandedRecordId] = useState(null);
-    const [printingRecord, setPrintingRecord] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '', phone: '', health: '', relationships: '', money: '', selfEsteem: '',
@@ -108,17 +106,6 @@ export default function App() {
             setStep(10);
         }
     }, []);
-
-    // Печать анкеты из админки: печатный лист рендерится скрыто (.print-sheet),
-    // после его появления в DOM вызываем системный диалог печати —
-    // там можно выбрать «Сохранить как PDF» и на компьютере, и на телефоне.
-    useEffect(() => {
-        if (!printingRecord) return undefined;
-        const id = setTimeout(() => window.print(), 60);
-        const clear = () => setPrintingRecord(null);
-        window.addEventListener('afterprint', clear);
-        return () => { clearTimeout(id); window.removeEventListener('afterprint', clear); };
-    }, [printingRecord]);
 
     // Демо-режим: как только анкета подставилась — сразу собираем разбор
     useEffect(() => {
@@ -924,7 +911,6 @@ export default function App() {
 
         return (
             <div className="min-h-screen page p-6 md:p-10 fade-in">
-                <PrintableReport record={printingRecord} />
                 <div className="max-w-3xl mx-auto">
                     <div className="flex justify-between items-center mb-6">
                         <h1 className="display text-[24px]">Анкеты клиентов</h1>
@@ -983,21 +969,14 @@ export default function App() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex flex-wrap items-center gap-4 mt-5">
-                                                    {record.result && (
-                                                        <details className="flex-1 min-w-[200px]">
-                                                            <summary className="text-[14px] accent-text cursor-pointer transition-opacity hover:opacity-70 outline-none">
-                                                                Показать полную расшифровку
-                                                            </summary>
-                                                            <div className="mt-4 report surface-flat p-5 max-h-96 overflow-y-auto" dangerouslySetInnerHTML={{ __html: record.result }}></div>
-                                                        </details>
-                                                    )}
-                                                    <button onClick={() => setPrintingRecord(record)}
-                                                            className="px-4 py-2.5 rounded-xl text-[13.5px] font-medium shrink-0"
-                                                            style={{ border: '1px solid var(--line)' }}>
-                                                        Скачать PDF
-                                                    </button>
-                                                </div>
+                                                {record.result && (
+                                                    <details className="mt-5">
+                                                        <summary className="text-[14px] accent-text cursor-pointer transition-opacity hover:opacity-70 outline-none">
+                                                            Показать полную расшифровку
+                                                        </summary>
+                                                        <div className="mt-4 report surface-flat p-5 max-h-96 overflow-y-auto" dangerouslySetInnerHTML={{ __html: record.result }}></div>
+                                                    </details>
+                                                )}
                                             </div>
                                         )}
                                     </div>
