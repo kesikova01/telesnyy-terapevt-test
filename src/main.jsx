@@ -11,9 +11,14 @@ import '@fontsource/ibm-plex-mono/500.css';
 
 import './styles.css';
 import App from './App';
+import LessonsPage from './components/LessonsPage';
+
+// /lessons — отдельный мини-сайт с бесплатными уроками, минуя сам тест.
+// Работает благодаря SPA-редиректу в vercel.json и serve.mjs (любой путь → index.html).
+const isLessonsPage = window.location.pathname.replace(/\/+$/, '') === '/lessons';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    {isLessonsPage ? <LessonsPage /> : <App />}
   </React.StrictMode>
 );

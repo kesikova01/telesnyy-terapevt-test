@@ -3,6 +3,7 @@ import { PSYCHO_DB } from './data/psychoDb';
 import BodyMap from './components/BodyMap';
 import TypingLoader from './components/TypingLoader';
 import ShareCard from './components/ShareCard';
+import PrintableReport from './components/PrintableReport';
 import { Summary, Chain, Support, Conclusion, NextStep } from './components/Insights';
 import {
   ADAPTIVE_STATEMENT,
@@ -13,12 +14,15 @@ import {
   UI,
 } from './data/insights';
 import { BODY_ZONES } from './data/bodyMap';
+import expertPhoto from './assets/expert-photo.jpg';
 import {
   LINK_LESSONS,
   LINK_CONSULTATION,
   GOOGLE_SHEET_URL,
   ADMIN_PASSWORD,
   SUPABASE_RPC,
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
   supabaseClient,
 } from './config';
 
@@ -83,6 +87,9 @@ export default function App() {
     const [passwordInput, setPasswordInput] = useState('');
     const [db, setDb] = useState([]);
     const [currentRecordId, setCurrentRecordId] = useState(null);
+    const [adminSearch, setAdminSearch] = useState('');
+    const [expandedRecordId, setExpandedRecordId] = useState(null);
+    const [printingRecord, setPrintingRecord] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '', phone: '', health: '', relationships: '', money: '', selfEsteem: '',
@@ -120,6 +127,17 @@ export default function App() {
         setTheme(next);
         localStorage.setItem('themePref', next);
     };
+
+    // Печать анкеты из админки: печатный лист рендерится скрыто (.print-sheet),
+    // после его появления в DOM вызываем системный диалог печати —
+    // там можно выбрать «Сохранить как PDF» и на компьютере, и на телефоне.
+    useEffect(() => {
+        if (!printingRecord) return undefined;
+        const id = setTimeout(() => window.print(), 60);
+        const clear = () => setPrintingRecord(null);
+        window.addEventListener('afterprint', clear);
+        return () => { clearTimeout(id); window.removeEventListener('afterprint', clear); };
+    }, [printingRecord]);
 
     // Демо-режим: как только анкета подставилась — сразу собираем разбор
     useEffect(() => {
@@ -607,10 +625,20 @@ export default function App() {
     const renderLanguage = () => (
         <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 fade-in relative">
             <div className="max-w-[400px] w-full text-center">
-                <span className="badge mb-8">3 сферы · 8 шагов · 5 минут</span>
+                <span className="badge mb-6">3 сферы · 8 шагов · 5 минут</span>
+
+                <div className="flex flex-col items-center gap-2 mt-6 mb-6">
+                    <img src={expertPhoto} alt="Жәнібек Мақаш"
+                         className="w-16 h-16 rounded-full object-cover"
+                         style={{ boxShadow: '0 0 0 3px var(--surface), 0 0 0 4px var(--line)' }} />
+                    <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"
+                       className="eyebrow hover:opacity-70 transition-opacity" style={{ fontSize: 11 }}>
+                        {INSTAGRAM_HANDLE}
+                    </a>
+                </div>
 
                 {/* та же фигура, что и на телесной карте результата */}
-                <div className="relative w-[86px] mx-auto mb-8">
+                <div className="relative w-[64px] mx-auto mb-7">
                     <svg viewBox="0 0 200 420" className="w-full h-auto" fill="none"
                          stroke="var(--figure)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="100" cy="35" r="26" />
@@ -630,14 +658,14 @@ export default function App() {
                     </svg>
                 </div>
 
-                <h1 className="display text-[26px] mb-3">
-                    Первопричина ваших состояний — в теле
+                <h1 className="display text-[24px] mb-2">
+                    Жәнібек Мақаштың авторлық тесті
                 </h1>
-                <p className="muted text-[16px] leading-relaxed mb-2">
-                    Тест покажет, где живёт напряжение и что за ним стоит
+                <p className="muted text-[15.5px] leading-relaxed mb-3">
+                    Авторский тест Жанибек Макаш
                 </p>
                 <p className="muted text-[15px] leading-relaxed opacity-80">
-                    Мәселелердің түпкі себебін табуға арналған тест
+                    Первопричина ваших состояний — в теле
                 </p>
 
                 <div className="rule w-14 mx-auto my-9"></div>
@@ -920,59 +948,97 @@ export default function App() {
     };
 
     if (showAdmin) {
+        const search = adminSearch.trim().toLowerCase();
+        const searchDigits = search.replace(/\D/g, '');
+        const visibleRecords = db.slice().reverse().filter(record => {
+            if (!search) return true;
+            const nameMatch = (record.name || '').toLowerCase().includes(search);
+            const phoneMatch = searchDigits && (record.phone || '').replace(/\D/g, '').includes(searchDigits);
+            return nameMatch || phoneMatch;
+        });
+
         return (
             <div className="min-h-screen page p-6 md:p-10 fade-in">
                 {themeToggle}
+                <PrintableReport record={printingRecord} />
                 <div className="max-w-3xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
+                    <div className="flex justify-between items-center mb-6">
                         <h1 className="display text-[24px]">Анкеты клиентов</h1>
                         <button onClick={() => setShowAdmin(false)} className="px-4 py-2 rounded-xl text-[14px] muted transition-colors" style={{ border: '1px solid var(--line)' }}>Выйти</button>
                     </div>
+
+                    {db.length > 0 && (
+                        <input type="text" className="field-input mb-6" placeholder="Поиск по имени или номеру телефона"
+                               value={adminSearch} onChange={e => setAdminSearch(e.target.value)} />
+                    )}
+
                     {db.length === 0 ? (
                         <p className="muted">Пока нет ни одной анкеты</p>
+                    ) : visibleRecords.length === 0 ? (
+                        <p className="muted">Ничего не найдено по запросу «{adminSearch}»</p>
                     ) : (
-                        <div className="space-y-4 pb-20">
-                            {db.slice().reverse().map((record, index) => (
-                                <div key={index} className="surface p-6">
-                                    <div className="flex justify-between items-start mb-5">
-                                        <div>
-                                            <h3 className="text-[17px] font-semibold">{record.name}</h3>
-                                            <p className="muted text-[15px] mt-0.5">{record.phone}</p>
-                                        </div>
-                                        <span className="text-[12px] muted opacity-70">{record.date}</span>
-                                    </div>
+                        <div className="space-y-3 pb-20">
+                            {visibleRecords.map((record) => {
+                                const isOpen = expandedRecordId === record.id;
+                                return (
+                                    <div key={record.id} className="surface overflow-hidden">
+                                        <button onClick={() => setExpandedRecordId(isOpen ? null : record.id)}
+                                                className="w-full flex justify-between items-center gap-4 p-5 text-left">
+                                            <div>
+                                                <h3 className="text-[16px] font-semibold">{record.name || '—'}</h3>
+                                                <p className="muted text-[14.5px] mt-0.5">{record.phone || '—'} · {record.date}</p>
+                                            </div>
+                                            <svg width="14" height="9" viewBox="0 0 14 9" fill="none" stroke="currentColor"
+                                                 strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                                                 className="muted shrink-0 transition-transform"
+                                                 style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}>
+                                                <path d="M1 1.5 L7 7.5 L13 1.5" />
+                                            </svg>
+                                        </button>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-[14px] leading-relaxed">
-                                        <div className="space-y-3">
-                                            <p><span className="eyebrow block mb-0.5">Здоровье</span> {record.health || '—'}</p>
-                                            <p><span className="eyebrow block mb-0.5">Отношения</span> {record.relationships || '—'}</p>
-                                            <p><span className="eyebrow block mb-0.5">Деньги</span> {record.money || '—'}</p>
-                                            <p><span className="eyebrow block mb-0.5">Самооценка</span> {record.selfEsteem || '—'}</p>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <p><span className="eyebrow block mb-0.5">Давность</span> {isOwnOption(record.time) ? record.customTime : (record.time || '—')}</p>
-                                            <p><span className="eyebrow block mb-0.5">Ситуация</span> {record.situation || '—'}</p>
-                                            <p><span className="eyebrow block mb-0.5">Эмоции</span> {record.emotions?.join(', ')} {record.customEmotion ? `(${record.customEmotion})` : ''}</p>
-                                            <p><span className="eyebrow block mb-0.5">Уточнения</span> {Object.values(record.clarify || {}).join(', ') || '—'}</p>
-                                            <p><span className="eyebrow block mb-0.5">Зоны напряжения</span> {[record.bodyKey, record.extraZone].filter(Boolean).join(', ') || '—'}</p>
-                                            <p><span className="eyebrow block mb-0.5">Цепочка</span> {(record.chain || []).join(' → ') || '—'}</p>
-                                            <p>
-                                                <span className="eyebrow block mb-0.5">Нажатые кнопки</span>
-                                                {record.clickedButtons?.length > 0 ? record.clickedButtons.join(' → ') : '—'}
-                                            </p>
-                                        </div>
-                                    </div>
+                                        {isOpen && (
+                                            <div className="px-5 pb-5 fade-in" style={{ borderTop: '1px solid var(--line)' }}>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-[14px] leading-relaxed pt-5">
+                                                    <div className="space-y-3">
+                                                        <p><span className="eyebrow block mb-0.5">Здоровье</span> {record.health || '—'}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Отношения</span> {record.relationships || '—'}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Деньги</span> {record.money || '—'}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Самооценка</span> {record.selfEsteem || '—'}</p>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        <p><span className="eyebrow block mb-0.5">Давность</span> {isOwnOption(record.time) ? record.customTime : (record.time || '—')}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Ситуация</span> {record.situation || '—'}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Эмоции</span> {record.emotions?.join(', ')} {record.customEmotion ? `(${record.customEmotion})` : ''}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Уточнения</span> {Object.values(record.clarify || {}).join(', ') || '—'}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Зоны напряжения</span> {[record.bodyKey, record.extraZone].filter(Boolean).join(', ') || '—'}</p>
+                                                        <p><span className="eyebrow block mb-0.5">Цепочка</span> {(record.chain || []).join(' → ') || '—'}</p>
+                                                        <p>
+                                                            <span className="eyebrow block mb-0.5">Нажатые кнопки</span>
+                                                            {record.clickedButtons?.length > 0 ? record.clickedButtons.join(' → ') : '—'}
+                                                        </p>
+                                                    </div>
+                                                </div>
 
-                                    {record.result && (
-                                        <details className="mt-5">
-                                            <summary className="text-[14px] accent-text cursor-pointer transition-opacity hover:opacity-70 outline-none">
-                                                Показать полную расшифровку
-                                            </summary>
-                                            <div className="mt-4 report surface-flat p-5 max-h-96 overflow-y-auto" dangerouslySetInnerHTML={{ __html: record.result }}></div>
-                                        </details>
-                                    )}
-                                </div>
-                            ))}
+                                                <div className="flex flex-wrap items-center gap-4 mt-5">
+                                                    {record.result && (
+                                                        <details className="flex-1 min-w-[200px]">
+                                                            <summary className="text-[14px] accent-text cursor-pointer transition-opacity hover:opacity-70 outline-none">
+                                                                Показать полную расшифровку
+                                                            </summary>
+                                                            <div className="mt-4 report surface-flat p-5 max-h-96 overflow-y-auto" dangerouslySetInnerHTML={{ __html: record.result }}></div>
+                                                        </details>
+                                                    )}
+                                                    <button onClick={() => setPrintingRecord(record)}
+                                                            className="px-4 py-2.5 rounded-xl text-[13.5px] font-medium shrink-0"
+                                                            style={{ border: '1px solid var(--line)' }}>
+                                                        Скачать PDF
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>

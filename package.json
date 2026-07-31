@@ -9,9 +9,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp dist/index.html dist/404.html",
     "preview": "vite preview",
-    "backup": "vite build && rm -rf static-build && cp -R dist static-build"
+    "backup": "npm run build && rm -rf static-build && cp -R dist static-build"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "5.3.0",

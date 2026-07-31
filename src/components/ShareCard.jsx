@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BODY_ZONES } from '../data/bodyMap';
 import { PATTERN_LABEL, UI } from '../data/insights';
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../config';
 
 // Контур фигуры — те же данные, что и в BodyMap, но рисуются на canvas
 // (Path2D понимает обычные SVG-пути "d" без изменений).
@@ -110,10 +111,14 @@ async function drawCard(bodyKey, extraZone, lang) {
   ctx.lineTo(W / 2 + 60, lastTitleY + 130);
   ctx.stroke();
 
-  const host = (typeof window !== 'undefined' && window.location.host) || '';
+  // Подпись эксперта вместо адреса сайта — картинка расходится в соцсетях сама по себе
+  ctx.fillStyle = '#2B2A26';
+  ctx.font = '600 30px Inter, -apple-system, sans-serif';
+  ctx.fillText(INSTAGRAM_HANDLE, W / 2, lastTitleY + 190);
+
   ctx.fillStyle = '#4B6B4F';
-  ctx.font = '500 22px "IBM Plex Mono", monospace';
-  ctx.fillText(spaced([host, ui.shareFooter].filter(Boolean).join(' · ')), W / 2, lastTitleY + 185);
+  ctx.font = '500 21px "IBM Plex Mono", monospace';
+  ctx.fillText(spaced(ui.shareFooter), W / 2, lastTitleY + 232);
 
   return canvas;
 }
@@ -132,7 +137,9 @@ export default function ShareCard({ bodyKey, extraZone, lang = 'ru', delay = 0 }
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            await navigator.share({ files: [file], title: ui.shareCardEyebrow });
+            // url уходит вместе с картинкой там, где приложение-получатель это поддерживает —
+            // так ссылка на инстаграм эксперта путешествует вместе с публикацией
+            await navigator.share({ files: [file], title: ui.shareCardEyebrow, text: INSTAGRAM_HANDLE, url: INSTAGRAM_URL });
             setState('idle');
             return;
           } catch {

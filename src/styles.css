@@ -304,6 +304,15 @@ body {
 }
 .report .highlight-box p { color: var(--ink); margin-bottom: 0; }
 
+/* Печать одной анкеты из админки в PDF (Ctrl/Cmd+P → «Сохранить как PDF») */
+.print-sheet { display: none; }
+
+@media print {
+    body * { visibility: hidden; }
+    .print-sheet, .print-sheet * { visibility: visible; }
+    .print-sheet { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+}
+
 /* Телесная карта */
 .heat-zone { opacity: 0; transition: opacity .9s ease; }
 
