@@ -53,7 +53,6 @@ export const LESSONS_TEXT = {
     payReceiptNote: 'Төлегеннен кейін чектің скриншотын WhatsApp-қа жіберіңіз — қолжетімділікті қолмен ашамыз.',
     payReceiptBtn: 'Чекті жіберу',
     payConsultBtn: 'Жеке талдауға жазылу',
-    payUnavailable: 'Төлем сілтемесі жақын арада қосылады',
     backToTest: '← Тестке оралу',
   },
   ru: {
@@ -101,7 +100,6 @@ export const LESSONS_TEXT = {
     payReceiptNote: 'После оплаты пришлите скриншот чека в WhatsApp — откроем доступ вручную.',
     payReceiptBtn: 'Отправить чек',
     payConsultBtn: 'Запись на персональный разбор',
-    payUnavailable: 'Ссылка на оплату появится в ближайшее время',
     backToTest: '← Вернуться к тесту',
   },
 };

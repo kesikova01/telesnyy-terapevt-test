@@ -164,20 +164,14 @@ export default function LessonsPage() {
                         </p>
                     ) : <div className="mb-5" />}
 
-                    {KASPI_PAY_URL ? (
-                        <a href={KASPI_PAY_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mb-3">
-                            {t.payKaspiBtn}
-                        </a>
-                    ) : (
-                        <button disabled className="btn btn-primary mb-3">{t.payKaspiBtn}</button>
-                    )}
+                    {/* Прямой ссылки Kaspi Pay пока нет — кнопка временно ведёт на тот же
+                        WhatsApp, что и «Отправить чек», пока эксперт не пришлёт ссылку Kaspi. */}
+                    <a href={KASPI_PAY_URL || RECEIPT_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary mb-3">
+                        {t.payKaspiBtn}
+                    </a>
 
                     {CARD_NUMBER && (
                         <p className="text-[14.5px] muted mb-3">{t.payCardLabel}: <span className="font-medium" style={{ color: 'var(--ink)' }}>{CARD_NUMBER}</span></p>
-                    )}
-
-                    {!KASPI_PAY_URL && (
-                        <p className="text-[12.5px] muted mb-4">{t.payUnavailable}</p>
                     )}
 
                     <p className="text-[13.5px] muted leading-relaxed mb-4 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
